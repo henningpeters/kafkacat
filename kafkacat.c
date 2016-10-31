@@ -202,7 +202,7 @@ static ssize_t produce_file (const char *path) {
  * Or if 'pathcnt' is > 0, read messages from files in 'paths' instead.
  */
 static void producer_run (FILE *fp, char **paths, int pathcnt) {
-        char   *sbuf  = NULL;
+        char   *sbuf = malloc(4096);
         size_t  size = 0;
         ssize_t len;
         char    errstr[512];
@@ -248,7 +248,7 @@ static void producer_run (FILE *fp, char **paths, int pathcnt) {
         } else {
                 /* Read messages from input, delimited by conf.delim */
                 while (conf.run &&
-                       (len = getdelim(&sbuf, &size, conf.delim, fp)) != -1) {
+                       (len = read(STDIN_FILENO, sbuf, 4096)) > 0) {
                         int msgflags = 0;
                         char *buf = sbuf;
                         char *key = NULL;
